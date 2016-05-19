@@ -21,7 +21,7 @@ namespace RPGbot
 
             RPGbot.ExecuteAndWait(async () =>
             {
-                await RPGbot.Connect("");
+                await RPGbot.Connect("token");
             });
         }
     }
