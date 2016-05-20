@@ -71,6 +71,7 @@ namespace RPGbot.Modules
                     });
                 group.CreateCommand("banish")
                     .Alias(new string[] { "изгнать", "выгнать", "shoo", "out" })
+                    .Parameter("user")
                     .Description("Removes player from group.")
                     .Do(async e =>
                     {
@@ -79,9 +80,14 @@ namespace RPGbot.Modules
                             await _client.ReplyError(e, "This command requires the bot have Manage Roles permission.");
                             return;
                         }
-                        var otherRoles = GetOtherRoles(e.User);
-                        await e.User.Edit(roles: otherRoles);
-                        await _client.Reply(e, $"Banishing player from group.");
+                        User user = e.Server.FindUsers(e.Args[0]).FirstOrDefault();
+                        //var otherRoles = GetOtherRoles(e.User);
+                        Role role = e.Server.Roles.Where(x => x.Name == "GroupMember").FirstOrDefault();
+                        if (role != null)
+                        {
+                            await user.RemoveRoles(role);
+                            await _client.Reply(e, $"Banishing player from group.");
+                        }
                     });
             });
         }

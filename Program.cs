@@ -66,10 +66,25 @@ namespace RPGbot
                 });
            
             //TODO: удалить - только для отладки
-            Client.MessageReceived += (s, e) =>
+            Client.MessageReceived += async (s, e) =>
             {
                 if (!e.Message.IsAuthor)
                     Console.WriteLine(e.User.Name + " said " + e.Message.Text);
+                if (e.Message.Text.StartsWith("--test"))
+                {                    
+                    Role role = e.Server.Roles.Where(x => x.Name == "GroupMember").FirstOrDefault();
+                    try
+                    {
+                        //User user = e.Server.FindUsers("RPGbot").FirstOrDefault();
+                        await e.User.AddRoles(new Role[] { role });
+
+                        //await e.User.Edit(roles: (new Role[] { role }));
+                    }
+                    catch (Exception exc)
+                    {
+                        await e.Channel.SendMessage(exc.Message);
+                    }
+                }
             };
 
             Client.AddModule<ColorsModule>("Colors", ModuleFilter.None);//.ServerWhitelist);
