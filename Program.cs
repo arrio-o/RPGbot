@@ -65,7 +65,7 @@ namespace RPGbot
                     //sends a message to channel with the given text
                 });
            
-
+            //TODO: удалить - только для отладки
             Client.MessageReceived += (s, e) =>
             {
                 if (!e.Message.IsAuthor)
@@ -73,8 +73,7 @@ namespace RPGbot
             };
 
             Client.AddModule<ColorsModule>("Colors", ModuleFilter.None);//.ServerWhitelist);
-
-            
+            Client.AddModule<RPGModule>("RPG", ModuleFilter.None);//.ServerWhitelist);
 
             Client.ExecuteAndWait(async () =>
             {
