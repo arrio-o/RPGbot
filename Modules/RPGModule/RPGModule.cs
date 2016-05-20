@@ -34,8 +34,8 @@ namespace RPGbot.Modules
             _roles = new List<RoleDefinition>()
             {
                 new RoleDefinition("GM", Color.Blue),
-                new RoleDefinition("GroupLeader", Color.Gold),
-                new RoleDefinition("GroupMember", Color.Default),                
+                new RoleDefinition("PartyLeader", Color.Gold),
+                new RoleDefinition("PartyMember", Color.Default),                
             };
             _rolesMap = _roles.ToDictionary(x => x.Id);
         }
@@ -45,7 +45,7 @@ namespace RPGbot.Modules
             _manager = manager;
             _client = _manager.Client;
 
-            manager.CreateCommands("group", group =>
+            manager.CreateCommands("party", group =>
             {
                 group.CreateCommand("list")
                     .Alias(new string[] { "список", "игроки" })
@@ -59,7 +59,7 @@ namespace RPGbot.Modules
                     .Alias(new string[] { "пригласить" })
                     .Parameter("user")
                     //.MinPermissions((int)PermissionLevel.BotOwner)
-                    .Description("Invites player to group.")
+                    .Description("Invites player to party./ Пригласить игрока в группу.")
                     .Do( e =>
                     {
                         User user = e.Server.FindUsers(e.Args[0]).FirstOrDefault();
@@ -67,12 +67,12 @@ namespace RPGbot.Modules
                             return _client.ReplyError(e, "Unknown user");
                         //string text = "NotImplemented";
                         //await _client.Reply(e, text);
-                        return AddRole(e, user, "GroupMember");
+                        return AddRole(e, user, "PartyMember");
                     });
                 group.CreateCommand("banish")
                     .Alias(new string[] { "изгнать", "выгнать", "shoo", "out" })
                     .Parameter("user")
-                    .Description("Removes player from group.")
+                    .Description("Removes player from party./ Выгнать игрока из группы.")
                     .Do(async e =>
                     {
                         if (!e.Server.CurrentUser.ServerPermissions.ManageRoles)
@@ -82,11 +82,11 @@ namespace RPGbot.Modules
                         }
                         User user = e.Server.FindUsers(e.Args[0]).FirstOrDefault();
                         //var otherRoles = GetOtherRoles(e.User);
-                        Role role = e.Server.Roles.Where(x => x.Name == "GroupMember").FirstOrDefault();
+                        Role role = e.Server.Roles.Where(x => x.Name == "PartyMember").FirstOrDefault();
                         if (role != null)
                         {
                             await user.RemoveRoles(role);
-                            await _client.Reply(e, $"Banishing player from group.");
+                            await _client.Reply(e, $"Banishing player from party.");
                         }
                     });
             });
@@ -97,8 +97,8 @@ namespace RPGbot.Modules
 
         private async Task AddRole(CommandEventArgs e, User user, string roleName)
         {
-            RoleDefinition groupRole;
-            if (!_rolesMap.TryGetValue(roleName.ToLowerInvariant(), out groupRole))
+            RoleDefinition partyRole;
+            if (!_rolesMap.TryGetValue(roleName.ToLowerInvariant(), out partyRole))
             {
                 await _client.ReplyError(e, "Unknown role");
                 return;
@@ -108,15 +108,15 @@ namespace RPGbot.Modules
                 await _client.ReplyError(e, "This command requires the bot have Manage Roles permission.");
                 return;
             }
-            Role role = e.Server.Roles.Where(x => x.Name == groupRole.Name).FirstOrDefault();
+            Role role = e.Server.Roles.Where(x => x.Name == partyRole.Name).FirstOrDefault();
             if (role == null)
             {
-                role = await e.Server.CreateRole(groupRole.Name);
-                await role.Edit(permissions: ServerPermissions.None, color: groupRole.Color);
+                role = await e.Server.CreateRole(partyRole.Name);
+                await role.Edit(permissions: ServerPermissions.None, color: partyRole.Color);
             }
             var otherRoles = GetOtherRoles(user);
             await user.Edit(roles: otherRoles.Concat(new Role[] { role }));
-            await _client.Reply(e, $"Adding {groupRole.Name} role to {user.Name}");
+            await _client.Reply(e, $"Adding {partyRole.Name} role to {user.Name}");
         }       
     }
 }

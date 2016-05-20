@@ -54,7 +54,8 @@ namespace RPGbot
             })
             .UsingModules()
             .UsingPermissionLevels(PermissionResolver); ;
-            
+
+            //TODO: удалить
             Client.GetService<CommandService>().CreateCommand("greet") //create command greet
                 .Alias(new string[] { "gr", "hi" }) //add 2 aliases, so it can be run with ~gr and ~hi
                 .Description("Greets a person.") //add description, it will be shown when ~help is used
@@ -72,7 +73,7 @@ namespace RPGbot
                     Console.WriteLine(e.User.Name + " said " + e.Message.Text);
                 if (e.Message.Text.StartsWith("--test"))
                 {                    
-                    Role role = e.Server.Roles.Where(x => x.Name == "GroupMember").FirstOrDefault();
+                    Role role = e.Server.Roles.Where(x => x.Name == "PartyMember").FirstOrDefault();
                     try
                     {
                         //User user = e.Server.FindUsers("RPGbot").FirstOrDefault();
