@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.Commands.Permissions.Levels;
 using Discord.Modules;
+using RPGbot.Modules;
 
 namespace RPGbot
 {
@@ -50,8 +52,9 @@ namespace RPGbot
                     catch { }
                 };
             })
-            .UsingModules();
-
+            .UsingModules()
+            .UsingPermissionLevels(PermissionResolver); ;
+            
             Client.GetService<CommandService>().CreateCommand("greet") //create command greet
                 .Alias(new string[] { "gr", "hi" }) //add 2 aliases, so it can be run with ~gr and ~hi
                 .Description("Greets a person.") //add description, it will be shown when ~help is used
@@ -68,6 +71,10 @@ namespace RPGbot
                 if (!e.Message.IsAuthor)
                     Console.WriteLine(e.User.Name + " said " + e.Message.Text);
             };
+
+            Client.AddModule<ColorsModule>("Colors", ModuleFilter.None);//.ServerWhitelist);
+
+            
 
             Client.ExecuteAndWait(async () =>
             {
@@ -87,6 +94,30 @@ namespace RPGbot
                     }
                 }
             });
+        }
+
+        public static int PermissionResolver(User user, Channel channel)
+        {
+            if (user.Id == GlobalConfig.Users.DevId)
+                return (int)PermissionLevel.BotOwner;
+            if (user.Server != null)
+            {
+                if (user == channel.Server.Owner)
+                    return (int)PermissionLevel.ServerOwner;
+
+                var serverPerms = user.ServerPermissions;
+                if (serverPerms.ManageRoles)
+                    return (int)PermissionLevel.ServerAdmin;
+                if (serverPerms.ManageMessages && serverPerms.KickMembers && serverPerms.BanMembers)
+                    return (int)PermissionLevel.ServerModerator;
+
+                var channelPerms = user.GetPermissions(channel);
+                if (channelPerms.ManagePermissions)
+                    return (int)PermissionLevel.ChannelAdmin;
+                if (channelPerms.ManageMessages)
+                    return (int)PermissionLevel.ChannelModerator;
+            }
+            return (int)PermissionLevel.User;
         }
     }
 }

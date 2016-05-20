@@ -80,6 +80,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalConfig.cs" />
+    <Compile Include="Modules\ColorsModule.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="PermissionLevels.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

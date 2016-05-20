@@ -35,5 +35,15 @@ namespace RPGbot
         private DiscordSettings _discord = new DiscordSettings();
         public static DiscordSettings Discord => _instance._discord;
 
+        //Users
+        public class UserSettings
+        {
+            [JsonProperty("dev")]
+            public ulong DevId;
+        }
+        [JsonProperty("users")]
+        private UserSettings _users = new UserSettings();
+        public static UserSettings Users => _instance._users;
+
     }
 }
