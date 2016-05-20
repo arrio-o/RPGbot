@@ -111,30 +111,6 @@ namespace RPGbot.Modules
             var otherRoles = GetOtherRoles(user);
             await user.Edit(roles: otherRoles.Concat(new Role[] { role }));
             await _client.Reply(e, $"Adding {groupRole.Name} role to {user.Name}");
-        }
-
-        private async Task SetColor(CommandEventArgs e, User user, string colorName)
-        {
-            RoleDefinition color;
-            if (!_rolesMap.TryGetValue(colorName.ToLowerInvariant(), out color))
-            {
-                await _client.ReplyError(e, "Unknown color");
-                return;
-            }
-            if (!e.Server.CurrentUser.ServerPermissions.ManageRoles)
-            {
-                await _client.ReplyError(e, "This command requires the bot have Manage Roles permission.");
-                return;
-            }
-            Role role = e.Server.Roles.Where(x => x.Name == color.Name).FirstOrDefault();
-            if (role == null)
-            {
-                role = await e.Server.CreateRole(color.Name);
-                await role.Edit(permissions: ServerPermissions.None, color: color.Color);
-            }
-            var otherRoles = GetOtherRoles(user);
-            await user.Edit(roles: otherRoles.Concat(new Role[] { role }));
-            await _client.Reply(e, $"Set {user.Name}'s color to {color.Name}");
-        }
+        }       
     }
 }
