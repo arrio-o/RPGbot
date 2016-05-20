@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace RPGbot.Modules
 {
-    /// <summary> Creates a role for each built-in color and allows users to freely select them. </summary>
     internal class RPGModule : IModule
     {
         private class RoleDefinition
@@ -49,7 +48,7 @@ namespace RPGbot.Modules
             {
                 group.CreateCommand("list")
                     .Alias(new string[] { "список", "игроки" })
-                    .Description("Gives a list of all group members.")
+                    .Description("Gives a list of all party members.")
                     .Do(async e =>
                     {
                         string text = "NotImplemented";
@@ -65,8 +64,6 @@ namespace RPGbot.Modules
                         User user = e.Server.FindUsers(e.Args[0]).FirstOrDefault();
                         if (user == null)
                             return _client.ReplyError(e, "Unknown user");
-                        //string text = "NotImplemented";
-                        //await _client.Reply(e, text);
                         return AddRole(e, user, "PartyMember");
                     });
                 group.CreateCommand("banish")
