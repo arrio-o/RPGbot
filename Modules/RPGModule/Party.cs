@@ -47,22 +47,18 @@ namespace RPGbot.Modules//.RPGModule
         }
         public void MoveNorth()
         {
-            //TODO: check for terrain type
             currentPosition.y -= 1;
         }
         public void MoveSouth()
         {
-            //TODO: check for terrain type
             currentPosition.y += 1;
         }
         public void MoveWest()
         {
-            //TODO: check for terrain type
             currentPosition.x -= 1;
         }
         public void MoveEast()
         {
-            //TODO: check for terrain type
             currentPosition.x += 1;
         }
     }
