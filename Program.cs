@@ -4,25 +4,119 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Commands;
+using Discord.Commands.Permissions.Levels;
+using Discord.Modules;
+using RPGbot.Modules;
 
 namespace RPGbot
 {
-    class Program
+    class RPGbot
     {
+        public static DiscordClient Client { get; private set; }
+
         static void Main(string[] args)
         {
-            var RPGbot = new DiscordClient();
+            GlobalConfig.Load();
 
-            RPGbot.MessageReceived += (s, e) =>
+            Client = new DiscordClient(new DiscordConfigBuilder()
+            {
+                MessageCacheSize = 10,
+                ConnectionTimeout = 60000,
+                LogLevel = LogSeverity.Debug,
+                LogHandler = (s, e) =>
+                    Console.WriteLine($"Severity: {e.Severity}" +
+                                      $"Message: {e.Message}" +
+                                      $"ExceptionMessage: {e.Exception?.Message ?? "-"}"),
+            })
+            .UsingCommands(x =>
+            {
+                x.AllowMentionPrefix = true;
+                x.PrefixChar = '!';
+                x.HelpMode = HelpMode.Public;
+                x.ExecuteHandler = (s, e) =>
+                {
+                    Client.Log.Info("Command", $"{e.Command.Text} ({e.User.Name})");
+                };
+                x.ErrorHandler = async (s, e) =>
+                {
+                    if (e.ErrorType != CommandErrorType.BadPermissions)
+                        return;
+                    if (string.IsNullOrWhiteSpace(e.Exception?.Message))
+                        return;
+                    try
+                    {
+                        Client.Log.Error("Error", $"{e.Exception.Message}");
+                        await e.Channel.SendMessage(e.Exception.Message).ConfigureAwait(false);
+                    }
+                    catch { }
+                };
+            })
+            .UsingModules()
+            .UsingPermissionLevels(PermissionResolver); ;
+            
+            Client.GetService<CommandService>().CreateCommand("greet") //create command greet
+                .Alias(new string[] { "gr", "hi" }) //add 2 aliases, so it can be run with ~gr and ~hi
+                .Description("Greets a person.") //add description, it will be shown when ~help is used
+                .Parameter("GreetedPerson", ParameterType.Required) //as an argument, we have a person we want to greet
+                .Do(async e =>
+                {
+                    await e.Channel.SendMessage($"{e.User.Name} greets {e.GetArg("GreetedPerson")}");
+                    //sends a message to channel with the given text
+                });
+           
+            //TODO: удалить - только для отладки
+            Client.MessageReceived += (s, e) =>
             {
                 if (!e.Message.IsAuthor)
                     Console.WriteLine(e.User.Name + " said " + e.Message.Text);
             };
 
-            RPGbot.ExecuteAndWait(async () =>
+            Client.AddModule<ColorsModule>("Colors", ModuleFilter.None);//.ServerWhitelist);
+            Client.AddModule<RPGModule>("RPG", ModuleFilter.None);//.ServerWhitelist);
+
+            Client.ExecuteAndWait(async () =>
             {
-                await RPGbot.Connect("token");
+                while (true)
+                {
+                    try
+                    {
+                        await Client.Connect(GlobalConfig.Discord.Token);
+                        Client.SetGame("test");
+                        //await _client.ClientAPI.Send(new Discord.API.Client.Rest.HealthRequest());
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Client.Log.Error($"Login Failed", ex);
+                        await Task.Delay(Client.Config.FailedReconnectDelay);
+                    }
+                }
             });
+        }
+
+        public static int PermissionResolver(User user, Channel channel)
+        {
+            if (user.Id == GlobalConfig.Users.DevId)
+                return (int)PermissionLevel.BotOwner;
+            if (user.Server != null)
+            {
+                if (user == channel.Server.Owner)
+                    return (int)PermissionLevel.ServerOwner;
+
+                var serverPerms = user.ServerPermissions;
+                if (serverPerms.ManageRoles)
+                    return (int)PermissionLevel.ServerAdmin;
+                if (serverPerms.ManageMessages && serverPerms.KickMembers && serverPerms.BanMembers)
+                    return (int)PermissionLevel.ServerModerator;
+
+                var channelPerms = user.GetPermissions(channel);
+                if (channelPerms.ManagePermissions)
+                    return (int)PermissionLevel.ChannelAdmin;
+                if (channelPerms.ManageMessages)
+                    return (int)PermissionLevel.ChannelModerator;
+            }
+            return (int)PermissionLevel.User;
         }
     }
 }
