@@ -72,7 +72,7 @@ namespace RPGbot.Modules
                            else
                            {
 
-                               Character userCharacter = _allCharacters.Where(x => x?.Owner == e.User).FirstOrDefault();
+                               Character userCharacter = _allCharacters.Where(x => x?.OwnerId == e.User.Id).FirstOrDefault();
                                if (userCharacter != null)
                                {
                                    _party.AddMember(userCharacter);
@@ -106,7 +106,7 @@ namespace RPGbot.Modules
                             await _client.Reply(e, $"Banishing player from party.");
                         }
 
-                        Character userCharacter = _allCharacters.Where(x => x.Owner == e.User).FirstOrDefault();
+                        Character userCharacter = _allCharacters.Where(x => x.OwnerId == e.User.Id).FirstOrDefault();
                         if (userCharacter != null)
                         {
                             _party.RemoveMember(userCharacter);
@@ -121,12 +121,13 @@ namespace RPGbot.Modules
                     .Description("")
                     .Do(async e =>
                     {
-                        Character newCharacter = _allCharacters.Where(x => x.Owner == e.User).FirstOrDefault();
+                        Character newCharacter = _allCharacters.Where(x => x.OwnerId == e.User.Id).FirstOrDefault();
                         if (newCharacter != null)
                             await _client.Reply(e, $"У вас уже есть персонаж: {e.Args[0]}");
                         else
                         {
                             newCharacter = new Character(e.User, e.Args[0]);
+                            //newCharacter.Race = "default";
                             _allCharacters.Add(newCharacter);
 
                             Role role = e.Server.Roles.Where(x => x.Name == "PartyMember").FirstOrDefault();
@@ -148,7 +149,7 @@ namespace RPGbot.Modules
                     .Description("")
                     .Do(async e =>
                     {
-                        Character removeCharacter = _allCharacters.Where(x => x.Owner == e.User).FirstOrDefault();
+                        Character removeCharacter = _allCharacters.Where(x => x.OwnerId == e.User.Id).FirstOrDefault();
                         if (removeCharacter == null)
                             await _client.Reply(e, $"У вас нет персонажа.");
                         else
@@ -163,7 +164,7 @@ namespace RPGbot.Modules
                     .Description("")
                     .Do(async e =>
                     {
-                        Character userCharacter = _allCharacters.Where(x => x.Owner == e.User).FirstOrDefault();
+                        Character userCharacter = _allCharacters.Where(x => x.OwnerId == e.User.Id).FirstOrDefault();
                         if (userCharacter == null)
                             await _client.Reply(e, $"У вас нет персонажа.");
                         else
@@ -173,15 +174,16 @@ namespace RPGbot.Modules
                     });
                 command.CreateCommand("load")
                     .Alias(new string[] { "загрузить", "открыть" })
+                    .Parameter("Name")
                     .Description("Загрузить персонажа")
                     .Do(async e =>
                     {
-                        Character newCharacter = _allCharacters.Where(x => x.Owner == e.User).FirstOrDefault();
+                        Character newCharacter = _allCharacters.Where(x => x.OwnerId == e.User.Id).FirstOrDefault();
                         if (newCharacter != null)
                             await _client.Reply(e, $"У вас уже есть персонаж: {e.Args[0]}");
                         else
                         {
-                            newCharacter = new Character(e.User, e.Args[0]);
+                            //newCharacter = new Character(e.User, e.Args[0]);
                             try
                             {
                                 newCharacter = UtilityClass<Character>.Deserialize(System.IO.Path.Combine(System.Environment.CurrentDirectory, "Characters\\" + e.User.Name + "\\" + e.Args[0]+".json"));
