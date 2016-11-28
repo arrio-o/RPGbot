@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace RPGbot.Modules
 {
-    /// <summary> Creates a role for each built-in color and allows users to freely select them. </summary>
     internal class RPGModule : IModule
     {
         private class RoleDefinition
@@ -25,9 +24,11 @@ namespace RPGbot.Modules
         }
 
         private readonly List<RoleDefinition> _roles;
+        private List<Character> _allCharacters = new List<Character>();
         private readonly Dictionary<string, RoleDefinition> _rolesMap;
         private ModuleManager _manager;
         private DiscordClient _client;
+        private Party _party = Party.Instance;
 
         public RPGModule()
         {
@@ -44,12 +45,12 @@ namespace RPGbot.Modules
         {
             _manager = manager;
             _client = _manager.Client;
-
+            //TODO: заменить лямбды на методы
             manager.CreateCommands("party", group =>
             {
                 group.CreateCommand("list")
                     .Alias(new string[] { "список", "игроки" })
-                    .Description("Gives a list of all group members.")
+                    .Description("Gives a list of all party members.")
                     .Do(async e =>
                     {
                         string text = "NotImplemented";
@@ -60,15 +61,30 @@ namespace RPGbot.Modules
                     .Parameter("user")
                     //.MinPermissions((int)PermissionLevel.BotOwner)
                     .Description("Invites player to party./ Пригласить игрока в группу.")
-                    .Do( e =>
-                    {
-                        User user = e.Server.FindUsers(e.Args[0]).FirstOrDefault();
-                        if (user == null)
-                            return _client.ReplyError(e, "Unknown user");
-                        //string text = "NotImplemented";
-                        //await _client.Reply(e, text);
-                        return AddRole(e, user, "PartyMember");
-                    });
+                    .Do(async e =>
+                   {
+                       try
+                       {
+                           User user = e.Server.FindUsers(e.Args[0]).FirstOrDefault();
+                           if (user == null)
+                               await _client.ReplyError(e, "Unknown user");
+                           else
+                           {
+
+                               Character userCharacter = _allCharacters.Where(x => x?.Owner == e.User).FirstOrDefault();
+                               if (userCharacter != null)
+                               {
+                                   _party.AddMember(userCharacter);
+                                   await _client.Reply(e, $"Персонаж '{userCharacter?.Name}' игрока {user} добавлен в группу");
+                               }
+                               await AddRole(e, user, "PartyMember");
+                           }
+                       }
+                       catch (System.Exception exc)
+                       {
+                           await _client.Reply(e, exc.Message);
+                       }
+                   });
                 group.CreateCommand("banish")
                     .Alias(new string[] { "изгнать", "выгнать", "shoo", "out" })
                     .Parameter("user")
@@ -87,6 +103,63 @@ namespace RPGbot.Modules
                         {
                             await user.RemoveRoles(role);
                             await _client.Reply(e, $"Banishing player from party.");
+                        }
+
+                        Character userCharacter = _allCharacters.Where(x => x.Owner == e.User).FirstOrDefault();
+                        if (userCharacter != null)
+                        {
+                            _party.RemoveMember(userCharacter);
+                            await _client.Reply(e, $"Персонаж '{userCharacter?.Name}' игрока {user} выгнан из группы");
+                        }
+                    });
+            });
+            manager.CreateCommands("character", command => {
+                command.CreateCommand("create")
+                    .Alias(new string[] { "создать" })
+                    .Parameter("Name")
+                    .Description("")
+                    .Do(async e =>
+                    {
+                        Character newCharacter = _allCharacters.Where(x => x.Owner == e.User).FirstOrDefault();
+                        if (newCharacter != null)
+                            await _client.Reply(e, $"У вас уже есть персонаж: {e.Args[0]}");
+                        else
+                        {
+                            newCharacter = new Character(e.User, e.Args[0]);
+                            _allCharacters.Add(newCharacter);
+
+                            Role role = e.Server.Roles.Where(x => x.Name == "PartyMember").FirstOrDefault();
+                            if (e.User.HasRole(role))
+                                _party.AddMember(newCharacter);
+                            await _client.Reply(e, $"Персонаж создан.");
+                        }
+                    });
+                command.CreateCommand("delete")
+                    .Alias(new string[] { "удалить" })                    
+                    .Description("")
+                    .Do(async e =>
+                    {
+                        Character removeCharacter = _allCharacters.Where(x => x.Owner == e.User).FirstOrDefault();
+                        if (removeCharacter == null)
+                            await _client.Reply(e, $"У вас нет персонажа.");
+                        else
+                        {
+                            _allCharacters.Remove(removeCharacter);
+                            _party.RemoveMember(removeCharacter);
+                            await _client.Reply(e, $"Персонаж удалён.");
+                        }
+                    });
+                command.CreateCommand("check")
+                    .Alias(new string[] { "my", "me" })
+                    .Description("")
+                    .Do(async e =>
+                    {
+                        Character userCharacter = _allCharacters.Where(x => x.Owner == e.User).FirstOrDefault();
+                        if (userCharacter == null)
+                            await _client.Reply(e, $"У вас нет персонажа.");
+                        else
+                        {
+                            await _client.Reply(e, $"Ваш персонаж: {userCharacter?.Name} {userCharacter?.Race}");
                         }
                     });
             });

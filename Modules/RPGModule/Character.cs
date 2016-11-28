@@ -10,15 +10,23 @@ namespace RPGbot.Modules//.RPGModule
 {
     public class Character
     {
+        [JsonIgnore]
+        public User Owner { get { return _owner; } private set { _owner = value; } }
+        private User _owner;
         [JsonProperty("OwnerName")]
-        public string OwnerName { get; set; }
-        //public User Owner { get; set; }
+        public string OwnerName { get { return _owner.Name; } }        
         [JsonProperty("Name")]
         public string Name { get; set; }
         [JsonProperty("Race")]
         public string Race { get; set; }
-
         
+        //TODO: создание персонажа
+        public Character(User owner, string name)
+        {
+            _owner = owner;
+            Name = name;
+        }        
+
         public class Attributes
         {
             public int Strengh { get; set; }
