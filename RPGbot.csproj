@@ -79,6 +79,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\RPGModule\CharacterTemplate.cs" />
     <Compile Include="Modules\RPGModule\Item.cs" />
     <Compile Include="Modules\RPGModule\Party.cs" />
     <Compile Include="Modules\RPGModule\Character.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="PermissionLevels.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="UtilityClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

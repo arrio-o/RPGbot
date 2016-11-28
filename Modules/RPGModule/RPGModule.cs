@@ -5,6 +5,7 @@ using Discord.Modules;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace RPGbot.Modules
 {
@@ -132,6 +133,14 @@ namespace RPGbot.Modules
                             if (e.User.HasRole(role))
                                 _party.AddMember(newCharacter);
                             await _client.Reply(e, $"Персонаж создан.");
+                            try
+                            {
+                                UtilityClass<Character>.Serialize(newCharacter, System.IO.Path.Combine(System.Environment.CurrentDirectory, "Characters\\" + e.User.Name + "\\" + newCharacter.Name + ".json"));
+                            }
+                            catch (Exception ex)
+                            {
+                                await _client.ReplyError(e, ex.Message);
+                            }
                         }
                     });
                 command.CreateCommand("delete")
@@ -160,6 +169,36 @@ namespace RPGbot.Modules
                         else
                         {
                             await _client.Reply(e, $"Ваш персонаж: {userCharacter?.Name} {userCharacter?.Race}");
+                        }
+                    });
+                command.CreateCommand("load")
+                    .Alias(new string[] { "загрузить", "открыть" })
+                    .Description("Загрузить персонажа")
+                    .Do(async e =>
+                    {
+                        Character newCharacter = _allCharacters.Where(x => x.Owner == e.User).FirstOrDefault();
+                        if (newCharacter != null)
+                            await _client.Reply(e, $"У вас уже есть персонаж: {e.Args[0]}");
+                        else
+                        {
+                            newCharacter = new Character(e.User, e.Args[0]);
+                            try
+                            {
+                                newCharacter = UtilityClass<Character>.Deserialize(System.IO.Path.Combine(System.Environment.CurrentDirectory, "Characters\\" + e.User.Name + "\\" + e.Args[0]+".json"));
+                            }
+                            catch(Exception ex)
+                            {
+                                await _client.ReplyError(e, ex.Message);
+                                return;
+                            }
+
+                            _allCharacters.Add(newCharacter);
+
+                            Role role = e.Server.Roles.Where(x => x.Name == "PartyMember").FirstOrDefault();
+                            if (e.User.HasRole(role))
+                                _party.AddMember(newCharacter);
+                            await _client.Reply(e, $"Персонаж загружен.");
+                            
                         }
                     });
             });
