@@ -97,7 +97,7 @@ namespace RPGbot
                 {
                     try
                     {
-                        await Client.Connect(GlobalConfig.Discord.Token);
+                        await Client.Connect(GlobalConfig.Discord.Token, TokenType.Bot);
                         Client.SetGame("test");
                         //await _client.ClientAPI.Send(new Discord.API.Client.Rest.HealthRequest());
                         break;
