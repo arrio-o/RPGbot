@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.IO;
 
 namespace RPGbot.Modules
 {
@@ -155,6 +156,57 @@ namespace RPGbot.Modules
                         await LoadCharacter(e);
                     });
             });
+            RegisterSkillCommands(manager);
+        }
+
+        private void RegisterSkillCommands(ModuleManager manager)
+        {
+            //List<string> skillNames = Directory.GetFiles(System.IO.Path.Combine(Environment.CurrentDirectory, "Data\\Skills"), "*.json")
+            //                         .Select(Path.GetFileNameWithoutExtension)
+            //                         .ToList();
+
+            List<string> skillPaths = Directory.GetFiles(System.IO.Path.Combine(Environment.CurrentDirectory, "Data\\Skills"), "*.json")
+                                     .ToList();
+
+            List<Skill> skills = new List<Skill>();
+
+            foreach (var skillPath in skillPaths)
+            {
+                try
+                {
+                    skills.Add(UtilityClass.Deserialize<Skill>(skillPath));
+                }
+                catch
+                { }
+            }
+            
+            manager.CreateCommands("skill", command =>
+            {
+                foreach (var skill in skills)
+                    CreateSkillCommand(command, skill);
+            });
+        }
+
+        private void CreateSkillCommand(CommandGroupBuilder command, Skill skill)
+        {
+            //TODO: класс с типами скиллов
+            switch (skill.SkillType)
+            {
+                case "Attack":
+                    command.CreateCommand(skill.Name)
+                    .Alias(skill.Alias.ToArray())
+                    .Parameter("Target", ParameterType.Required)
+                    .Parameter("TargetBodyPart")
+                    .Description(skill.Description)
+                    .Do(async e =>
+                    {
+                        //TODO: реализовать поддержку скиллов в виде плагинов
+                        await UseSkillAttack(e, skill);
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
 
         private IEnumerable<Role> GetOtherRoles(User user)

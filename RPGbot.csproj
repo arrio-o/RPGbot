@@ -79,13 +79,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\RPGModule\CharacterCommands.cs" />
-    <Compile Include="Modules\RPGModule\CharacterTemplate.cs" />
+    <Compile Include="Modules\RPGModule\CommandsCharacter.cs" />
+    <Compile Include="Modules\RPGModule\CommandsSkills.cs" />
     <Compile Include="Modules\RPGModule\Item.cs" />
     <Compile Include="Modules\RPGModule\Party.cs" />
     <Compile Include="Modules\RPGModule\Character.cs" />
     <Compile Include="Modules\RPGModule\Race.cs" />
     <Compile Include="Modules\RPGModule\RPGModule.cs" />
+    <Compile Include="Modules\RPGModule\Skill.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GlobalConfig.cs" />
     <Compile Include="Extensions.cs" />

@@ -11,26 +11,18 @@ namespace RPGbot.Modules//.RPGModule
     //[JsonObject("Character")]
     public class Character
     {
-        //[JsonProperty("OwnerId")]
         public ulong OwnerId { get; set; }
-        //[JsonProperty("OwnerName")]
         public string OwnerName { get; set; }
-        //[JsonProperty("Name")]
         public string Name { get; set; }
         [JsonProperty("Race")]
         public string RaceName { get; set; }
-        //[JsonProperty("Size")]
         public uint Size { get; set; } = 100;
-        //[JsonProperty("Attributes")]
         public Attributes Attributes { get; set; }
-        //[JsonProperty("Status")]
         public Status Status { get; set; }
-        //[JsonProperty("BodyParts")]
         public List<BodyPart> BodyParts { get; set; }
-        //[JsonProperty("Backpack")]
+        public List<string> Skills { get; set; }
         public List<Item> Backpack { get; set; }
-
-        //TODO: создание персонажа
+        
         [JsonConstructor]
         private Character()
         {
@@ -56,46 +48,21 @@ namespace RPGbot.Modules//.RPGModule
             foreach (var bodyPart in race.BodyParts)
                 BodyParts.Add(new BodyPart(bodyPart));
             Backpack = new List<Item>();
+            Skills = new List<string>();
         }
-
-        
-
-        //[J("Attributes")]
-
-        //[JsonProperty("Attributes")]
-        //public Attributes attributes = new Attributes();
-
-        //public class Equipment
-        //{
-        //    public Item head { get; set; }
-        //    public Item body { get; set; }
-        //}
-        //[JsonProperty("Equipment")]
-        //public Equipment equipment = new Equipment();
-
     }
     
     public class Attributes
     {
-        //[JsonProperty("Strengh")]
         public int Strengh { get; set; } = 0;
-        //[JsonProperty("Vitality")]
         public int Vitality { get; set; } = 0;
-        //[JsonProperty("Dexterity")]
         public int Dexterity { get; set; } = 0;
-        //[JsonProperty("Intelligence")]
         public int Intelligence { get; set; } = 0;
 
         public Attributes()
         {
 
-        }
-
-        //public static Attributes operator = (Attributes a, BaseAttributes b)
-        //{
-        //    a.Dexterity = b.Dexterity;
-        //}
-        
+        }        
     }
 
     public class Status
@@ -115,9 +82,6 @@ namespace RPGbot.Modules//.RPGModule
 
     public class BodyPart:BodyPartTemplate
     {
-        //public string Name { get; set; }
-        //public string Description { get; set; }
-        //public string SlotType { get; set; }
         public Item Holding { get; set; }
         public string Status { get; set; }
 

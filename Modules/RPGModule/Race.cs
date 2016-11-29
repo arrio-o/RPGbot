@@ -19,15 +19,6 @@ namespace RPGbot.Modules
         public List<Item> Backpack { get; set; } = new List<Item>();
     }
 
-    //[JsonObject("Base attributes")]
-    //public class Attributes
-    //{
-    //    public int Strengh { get; set; }
-    //    public int Vitality { get; set; }
-    //    public int Dexterity { get; set; }
-    //    public int Intelligence { get; set; }
-    //}
-
     public class Modifiers
     {
         public double HP { get; set; }
@@ -40,17 +31,6 @@ namespace RPGbot.Modules
         public string Description { get; set; }
         public string SlotType { get; set; }
         public double Criticalness { get; set; }
-        //public Item Holding { get; set; }
-        //public string Status { get; set; }
     }
-
-
-    //public string Name { get; set; }
-    //public string Description { get; set; }
-    //public class Modifiers
-    //{
-    //    public double Hitpoints { get; set; }
-    //    public double Energy { get; set; }
-    //}
     
 }
