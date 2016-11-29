@@ -9,7 +9,7 @@ using System;
 
 namespace RPGbot.Modules
 {
-    internal class RPGModule : IModule
+    internal partial class RPGModule : IModule
     {
         private class RoleDefinition
         {
@@ -59,7 +59,7 @@ namespace RPGbot.Modules
                     });
                 group.CreateCommand("invite")
                     .Alias(new string[] { "пригласить" })
-                    .Parameter("user")
+                    .Parameter("user", ParameterType.Required)
                     //.MinPermissions((int)PermissionLevel.BotOwner)
                     .Description("Invites player to party./ Пригласить игрока в группу.")
                     .Do(async e =>
@@ -88,7 +88,7 @@ namespace RPGbot.Modules
                    });
                 group.CreateCommand("banish")
                     .Alias(new string[] { "изгнать", "выгнать", "shoo", "out" })
-                    .Parameter("user")
+                    .Parameter("user", ParameterType.Required)
                     .Description("Removes player from party./ Выгнать игрока из группы.")
                     .Do(async e =>
                     {
@@ -117,60 +117,34 @@ namespace RPGbot.Modules
             manager.CreateCommands("character", command => {
                 command.CreateCommand("create")
                     .Alias(new string[] { "создать" })
-                    .Parameter("Name")
-                    .Description("")
+                    .Parameter("Name", ParameterType.Required)
+                    .Parameter("Race", ParameterType.Required)
+                    .Description("Создание персонажа: Имя Раса")
                     .Do(async e =>
                     {
-                        Character newCharacter = _allCharacters.Where(x => x.OwnerId == e.User.Id).FirstOrDefault();
-                        if (newCharacter != null)
-                            await _client.Reply(e, $"У вас уже есть персонаж: {e.Args[0]}");
-                        else
-                        {
-                            newCharacter = new Character(e.User, e.Args[0]);
-                            //newCharacter.Race = "default";
-                            _allCharacters.Add(newCharacter);
-
-                            Role role = e.Server.Roles.Where(x => x.Name == "PartyMember").FirstOrDefault();
-                            if (e.User.HasRole(role))
-                                _party.AddMember(newCharacter);
-                            await _client.Reply(e, $"Персонаж создан.");
-                            try
-                            {
-                                UtilityClass<Character>.Serialize(newCharacter, System.IO.Path.Combine(System.Environment.CurrentDirectory, "Characters\\" + e.User.Name + "\\" + newCharacter.Name + ".json"));
-                            }
-                            catch (Exception ex)
-                            {
-                                await _client.ReplyError(e, ex.Message);
-                            }
-                        }
+                        await CreateCharacter(e);
                     });
-                command.CreateCommand("delete")
-                    .Alias(new string[] { "удалить" })                    
+                command.CreateCommand("unload")
+                    .Alias(new string[] { "выгрузить" })                    
                     .Description("")
                     .Do(async e =>
                     {
-                        Character removeCharacter = _allCharacters.Where(x => x.OwnerId == e.User.Id).FirstOrDefault();
-                        if (removeCharacter == null)
-                            await _client.Reply(e, $"У вас нет персонажа.");
-                        else
-                        {
-                            _allCharacters.Remove(removeCharacter);
-                            _party.RemoveMember(removeCharacter);
-                            await _client.Reply(e, $"Персонаж удалён.");
-                        }
+                        await UnloadCharacter(e);
                     });
                 command.CreateCommand("check")
-                    .Alias(new string[] { "my", "me" })
+                    .Alias(new string[] { "my", "me", "я", "мой" })
                     .Description("")
                     .Do(async e =>
                     {
-                        Character userCharacter = _allCharacters.Where(x => x.OwnerId == e.User.Id).FirstOrDefault();
-                        if (userCharacter == null)
-                            await _client.Reply(e, $"У вас нет персонажа.");
-                        else
-                        {
-                            await _client.Reply(e, $"Ваш персонаж: {userCharacter?.Name} {userCharacter?.Race}");
-                        }
+                        await CheckCharacter(e);
+                    });
+
+                command.CreateCommand("readraw")
+                    .Alias(new string[] { "raw", "файл"})
+                    .Description("Чтение сырых данных из файла персонажа")
+                    .Do(async e =>
+                    {
+                        await ReadRawCharacter(e);
                     });
                 command.CreateCommand("load")
                     .Alias(new string[] { "загрузить", "открыть" })
@@ -178,30 +152,7 @@ namespace RPGbot.Modules
                     .Description("Загрузить персонажа")
                     .Do(async e =>
                     {
-                        Character newCharacter = _allCharacters.Where(x => x.OwnerId == e.User.Id).FirstOrDefault();
-                        if (newCharacter != null)
-                            await _client.Reply(e, $"У вас уже есть персонаж: {e.Args[0]}");
-                        else
-                        {
-                            //newCharacter = new Character(e.User, e.Args[0]);
-                            try
-                            {
-                                newCharacter = UtilityClass<Character>.Deserialize(System.IO.Path.Combine(System.Environment.CurrentDirectory, "Characters\\" + e.User.Name + "\\" + e.Args[0]+".json"));
-                            }
-                            catch(Exception ex)
-                            {
-                                await _client.ReplyError(e, ex.Message);
-                                return;
-                            }
-
-                            _allCharacters.Add(newCharacter);
-
-                            Role role = e.Server.Roles.Where(x => x.Name == "PartyMember").FirstOrDefault();
-                            if (e.User.HasRole(role))
-                                _party.AddMember(newCharacter);
-                            await _client.Reply(e, $"Персонаж загружен.");
-                            
-                        }
+                        await LoadCharacter(e);
                     });
             });
         }

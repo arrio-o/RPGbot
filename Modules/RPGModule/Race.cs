@@ -3,17 +3,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace RPGbot.Modules
 {
-    class Race
+    public class Race
+    {
+        public string Name { get; set; } = "";
+        public List<string> Alias { get; set; } = new List<string>();
+        public string Description { get; set; } = "-";
+        public uint Size { get; set; } = 100;
+        public Attributes BaseAttributes { get; set; } = new Attributes();
+        public Modifiers Modifiers { get; set; } = new Modifiers();
+        public List<BodyPartTemplate> BodyParts { get; set; } = new List<BodyPartTemplate>();
+        public List<Item> Backpack { get; set; } = new List<Item>();
+    }
+
+    //[JsonObject("Base attributes")]
+    //public class Attributes
+    //{
+    //    public int Strengh { get; set; }
+    //    public int Vitality { get; set; }
+    //    public int Dexterity { get; set; }
+    //    public int Intelligence { get; set; }
+    //}
+
+    public class Modifiers
+    {
+        public double HP { get; set; }
+        public double MP { get; set; }
+    }
+
+    public class BodyPartTemplate
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public class Modifiers
-        {
-            public double Hitpoints;
-            public double Energy;
-        }
+        public string SlotType { get; set; }
+        public double Criticalness { get; set; }
+        //public Item Holding { get; set; }
+        //public string Status { get; set; }
     }
+
+
+    //public string Name { get; set; }
+    //public string Description { get; set; }
+    //public class Modifiers
+    //{
+    //    public double Hitpoints { get; set; }
+    //    public double Energy { get; set; }
+    //}
+    
 }

@@ -8,15 +8,15 @@ using Newtonsoft.Json;
 
 namespace RPGbot
 {
-    public static class UtilityClass<T>
+    public static class UtilityClass
     {
-        public static void Serialize(T c, string filepath)
+        public static void Serialize<T>(T c, string filepath)
         {
             string res = JsonConvert.SerializeObject(c, Formatting.Indented);
             //Directory.CreateDirectory(filepath);
             File.WriteAllText(filepath, res);
         }
-        public static T Deserialize(string filepath)
+        public static T Deserialize<T>(string filepath)
         {
             string json = File.ReadAllText(filepath);
             var res = JsonConvert.DeserializeObject<T>(json);

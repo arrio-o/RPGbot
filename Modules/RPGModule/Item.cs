@@ -11,6 +11,6 @@ namespace RPGbot.Modules//.RPGModule
         public string Name { get; set; }
         public string Description { get; set; }
         public string Type { get; set; }
-        public string[] acceptableSlots { get; set; }
+        public string[] AcceptableSlots { get; set; }
     }
 }

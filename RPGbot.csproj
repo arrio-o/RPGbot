@@ -79,6 +79,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\RPGModule\CharacterCommands.cs" />
     <Compile Include="Modules\RPGModule\CharacterTemplate.cs" />
     <Compile Include="Modules\RPGModule\Item.cs" />
     <Compile Include="Modules\RPGModule\Party.cs" />
