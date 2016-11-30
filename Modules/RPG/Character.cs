@@ -116,10 +116,12 @@ namespace RPGbot.Modules.RPG
             var damage = dice.LastRoll;
             report += ($"Armor absorbtion is 0. Armor mitigation is 0. Resist to {skill.DamageType} is 0");
             report += Environment.NewLine;
+            if (damage < 0) damage = 0;
             report += ($"Applying {damage} damage.");
             //TODO: use Traits and Armor items to reduce damage
             //var armorAbsorb = targetPart.Holding.;
             //var armorMitigation = 
+
             this.Status.Hitpoints -= damage;
 
         }
