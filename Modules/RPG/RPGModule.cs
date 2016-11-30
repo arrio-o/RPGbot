@@ -115,7 +115,7 @@ namespace RPGbot.Modules.RPG
                         }
                     });
             });
-            manager.CreateCommands("character", command => {
+            manager.CreateCommands("char", command => {
                 command.CreateCommand("create")
                     .Alias(new string[] { "создать" })
                     .Parameter("Name", ParameterType.Required)
@@ -164,7 +164,7 @@ namespace RPGbot.Modules.RPG
                     .Do(async e =>
                     {
                         var dice = new Dice(e.GetArg(0));
-                        await _client.Reply(e, dice.ToString());
+                        await _client.Reply(e, dice + " => " + dice.Roll());
                     });
             });
             RegisterSkillCommands(manager);

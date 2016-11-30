@@ -28,8 +28,8 @@ namespace RPGbot.Modules.RPG
                 //int damage;
                 //TODO: apply damage
                 string report = "";
-                if (targetCharacter.Dodge(userCharacter, skill, ref report))
-                    targetCharacter.Status.Hitpoints -= (new Dice(skill.BaseDamage).Roll());
+                if (!targetCharacter.Dodge(userCharacter, skill, BodyPartTemplate.GetSlotType(e.Args?[1]), ref report))
+                    targetCharacter.ApplyDamage(userCharacter, skill, BodyPartTemplate.GetSlotType(e.Args?[1]), ref report);
                 await _client.Reply(e, report);
             }
         }

@@ -45,8 +45,11 @@ namespace RPGbot.Modules.RPG
             if (userCharacter == null)
                 await _client.Reply(e, $"У вас нет персонажа.");
             else
-            {                
-                await _client.Reply(e, $"Ваш персонаж: {userCharacter?.Name} {userCharacter?.RaceName}");
+            {
+                string respond = $"Ваш персонаж: {userCharacter?.Name} the {userCharacter?.RaceName}";
+                respond += Environment.NewLine;
+                respond += $"HP: {userCharacter.Status.Hitpoints}";
+                await _client.Reply(e, respond);
             }
         }
 

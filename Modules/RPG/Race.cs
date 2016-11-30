@@ -29,8 +29,44 @@ namespace RPGbot.Modules.RPG
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public string SlotType { get; set; }
+        [JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public SlotTypes SlotType { get; set; }
         public double Criticalness { get; set; }
+
+        //[JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public enum SlotTypes
+        {
+            undefined, Head, Neck,
+            //[JsonProperty("Upper body")]
+            UpperBody,
+            //[JsonProperty("Lower body")]
+            LowerBody,
+            Leg, Hand, Wing, Tail
+        }
+        public static SlotTypes GetSlotType(string strSlotType)
+        {
+            switch (strSlotType)
+            {
+                case "Head":
+                    return SlotTypes.Head;
+                case "Neck":
+                    return SlotTypes.Neck;
+                case "UpperBody":
+                    return SlotTypes.UpperBody;
+                case "LowerBody":
+                    return SlotTypes.LowerBody;
+                case "Leg":
+                    return SlotTypes.Leg;
+                case "Hand":
+                    return SlotTypes.Hand;
+                case "Wing":
+                    return SlotTypes.Wing;
+                case "Tail":
+                    return SlotTypes.Tail;
+                default:
+                    return SlotTypes.undefined;
+            }
+        }
     }
-    
+
 }

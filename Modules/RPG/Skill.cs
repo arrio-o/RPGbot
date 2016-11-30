@@ -29,5 +29,20 @@ namespace RPGbot.Modules.RPG
         public string Dexterity { get; set; }
         public string Strength { get; set; }
         public string Intelligence { get; set; }
+
+        public static double GetScalingNumber(string scaling)
+        {
+            switch (scaling)
+            {
+                case "S": return 0.7;
+                case "A": return 0.6;
+                case "B": return 0.5;
+                case "C": return 0.4;
+                case "D": return 0.3;
+                case "E": return 0.2;
+                case "F": return 0.1;
+                default: return 0;
+            }
+        }
     }
 }

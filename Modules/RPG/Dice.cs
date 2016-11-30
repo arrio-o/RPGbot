@@ -53,7 +53,7 @@ namespace RPGbot.Modules.RPG
             for (int i = 0; i < Count; ++i)
             {
                 Rand.GetBytes(four_bytes);
-                result += BitConverter.ToUInt32(four_bytes, 0) % (Sides+1);
+                result += BitConverter.ToUInt32(four_bytes, 0) % (Sides) + 1;
                 //result += (new Random()).Next(1, (int)Sides);
             }
             LastRoll = result + Modifier;
