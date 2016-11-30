@@ -8,16 +8,17 @@ namespace RPGbot.Modules.RPG
 {
     public class Dice
     {
-        public uint Count { get; set; } = 0;
-        public uint Sides { get; set; } = 0;
+        public byte Count { get; set; } = 0;
+        public byte Sides { get; set; } = 0;
         public int Modifier { get; set; } = 0;
+        public long LastRoll { get; private set; } = 0;
 
         public Dice()
         {
 
         }
 
-        public Dice(uint count, uint sides, int modifier)
+        public Dice(byte count, byte sides, int modifier)
         {
             Count = count;
             Sides = sides;
@@ -31,9 +32,9 @@ namespace RPGbot.Modules.RPG
             {
                 Modifier = (diceString.Contains('+') ? 1 : diceString.Contains('-') ? -1 : 0);
                 var str = diceString.Split('d');
-                Count = uint.Parse(str[0]);
+                Count = byte.Parse(str[0]);
                 str = str[1].Split('+', '-');
-                Sides = uint.Parse(str[0]);
+                Sides = byte.Parse(str[0]);
                 if (Modifier != 0)
                     Modifier *= (int.Parse(str[1]));
             }
@@ -52,11 +53,20 @@ namespace RPGbot.Modules.RPG
             for (int i = 0; i < Count; ++i)
             {
                 Rand.GetBytes(four_bytes);
-                result += BitConverter.ToUInt32(four_bytes, 0) % Sides;
+                result += BitConverter.ToUInt32(four_bytes, 0) % (Sides+1);
                 //result += (new Random()).Next(1, (int)Sides);
             }
-            return (result+Modifier);
+            LastRoll = result + Modifier;
+            return LastRoll;
         }
+
+        //public static long GetCryptoRandom(byte maxValue)
+        //{
+        //    var Rand = System.Security.Cryptography.RandomNumberGenerator.Create();
+        //    byte[] four_bytes = new byte[4];
+        //    Rand.GetBytes(four_bytes);
+        //    return BitConverter.ToUInt32(four_bytes, 0) % (maxValue+1);
+        //}
 
         public override string ToString()
         {

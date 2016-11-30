@@ -27,7 +27,10 @@ namespace RPGbot.Modules.RPG
                 await _client.Reply(e, string.Format(flavorText, userCharacter.Name, targetCharacter.Name, e.Args?[1]));
                 //int damage;
                 //TODO: apply damage
-                targetCharacter.Status.Hitpoints -= (new Dice(skill.BaseDamage).Roll());
+                string report = "";
+                if (targetCharacter.Dodge(userCharacter, skill, ref report))
+                    targetCharacter.Status.Hitpoints -= (new Dice(skill.BaseDamage).Roll());
+                await _client.Reply(e, report);
             }
         }
     }

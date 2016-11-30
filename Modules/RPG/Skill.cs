@@ -13,6 +13,7 @@ namespace RPGbot.Modules.RPG
         public List<string> FlavorText { get; set; }
         public string Description { get; set; }
         public string BaseDamage { get; set; }
+        public double BaseHitChance { get; set; }
         public int Manacost { get; set; }
         public uint Cooldown { get; set; }
         public string SkillType { get; set; }
