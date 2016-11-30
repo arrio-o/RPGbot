@@ -7,7 +7,7 @@ using Discord;
 using Discord.Commands;
 using Discord.Modules;
 
-namespace RPGbot.Modules
+namespace RPGbot.Modules.RPG
 {
     internal partial class RPGModule : IModule
     {

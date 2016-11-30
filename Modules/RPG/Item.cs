@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPGbot.Modules//.RPGModule
+namespace RPGbot.Modules.RPG
 {
     public class Item
     {

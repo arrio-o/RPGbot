@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System;
 using System.IO;
 
-namespace RPGbot.Modules
+namespace RPGbot.Modules.RPG
 {
     internal partial class RPGModule : IModule
     {
@@ -156,6 +156,17 @@ namespace RPGbot.Modules
                         await LoadCharacter(e);
                     });
             });
+            manager.CreateCommands("", command => {
+                command.CreateCommand("dice")
+                    .Alias(new string[] { "roll" })
+                    .Parameter("Dice \"#d#+#\"]", ParameterType.Required)
+                    .Description("roll dice \"#d#+#\"")
+                    .Do(async e =>
+                    {
+                        var dice = new Dice(e.GetArg(0));
+                        await _client.Reply(e, dice.ToString());
+                    });
+            });
             RegisterSkillCommands(manager);
         }
 
@@ -196,7 +207,7 @@ namespace RPGbot.Modules
                     command.CreateCommand(skill.Name)
                     .Alias(skill.Alias.ToArray())
                     .Parameter("Target", ParameterType.Required)
-                    .Parameter("TargetBodyPart")
+                    .Parameter("TargetBodyPart", ParameterType.Optional)
                     .Description(skill.Description)
                     .Do(async e =>
                     {

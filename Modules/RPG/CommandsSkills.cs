@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.Modules;
 
-namespace RPGbot.Modules
+namespace RPGbot.Modules.RPG
 {
     internal partial class RPGModule : IModule
     {
@@ -26,21 +26,9 @@ namespace RPGbot.Modules
                     flavorText = skill.FlavorText[(new Random()).Next(0, skill.FlavorText.Count)];                
                 await _client.Reply(e, string.Format(flavorText, userCharacter.Name, targetCharacter.Name, e.Args?[1]));
                 //int damage;
-                //targetCharacter.Status.Hitpoints = 
+                //TODO: apply damage
+                targetCharacter.Status.Hitpoints -= (new Dice(skill.BaseDamage).Roll());
             }
-        }
-
-        private void ParseDamageStr(string damageString)
-        {
-            //var str = damageString.Split('d');
-            //var diceCount = int.Parse(str[0]);
-            //str = str[1].Split('+', '-');
-            //var diceSides = int.Parse(str[0]);
-            //var diceModifier = int.Parse
-            //foreach (Match m in Regex.Matches(damageString, pattern))
-            //    Console.WriteLine("{0}: {1}", ++ctr, m.Groups[1].Value);
-            //var diceCount = int.Parse(new string(damageString.TakeWhile(s => s == 'd').ToArray()));
-            //var 
         }
     }
 }

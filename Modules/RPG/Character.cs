@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Newtonsoft.Json;
 
-namespace RPGbot.Modules//.RPGModule
+namespace RPGbot.Modules.RPG
 {
     //[JsonObject("Character")]
     public class Character
@@ -16,7 +16,7 @@ namespace RPGbot.Modules//.RPGModule
         public string Name { get; set; }
         [JsonProperty("Race")]
         public string RaceName { get; set; }
-        public uint Size { get; set; } = 100;
+        public ulong Size { get; set; } = 100;
         public Attributes Attributes { get; set; }
         public Status Status { get; set; }
         public List<BodyPart> BodyParts { get; set; }
@@ -68,9 +68,9 @@ namespace RPGbot.Modules//.RPGModule
     public class Status
     {
         [JsonProperty("HP")]
-        public int Hitpoints { get; set; } = 0;
+        public long Hitpoints { get; set; } = 0;
         [JsonProperty("MP")]
-        public int Manapoints { get; set; } = 0;
+        public long Manapoints { get; set; } = 0;
         [JsonProperty("Condition")]
         public string Condition { get; set; } = "OK";
 

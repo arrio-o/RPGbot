@@ -8,6 +8,7 @@ using Discord.Commands;
 using Discord.Commands.Permissions.Levels;
 using Discord.Modules;
 using RPGbot.Modules;
+using RPGbot.Modules.RPG;
 
 namespace RPGbot
 {

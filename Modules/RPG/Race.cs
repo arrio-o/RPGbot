@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace RPGbot.Modules
+namespace RPGbot.Modules.RPG
 {
     public class Race
     {
         public string Name { get; set; } = "";
         public List<string> Alias { get; set; } = new List<string>();
         public string Description { get; set; } = "-";
-        public uint Size { get; set; } = 100;
+        public ulong Size { get; set; } = 100;
         public Attributes BaseAttributes { get; set; } = new Attributes();
         public Modifiers Modifiers { get; set; } = new Modifiers();
         public List<BodyPartTemplate> BodyParts { get; set; } = new List<BodyPartTemplate>();
