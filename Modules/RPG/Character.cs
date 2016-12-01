@@ -23,15 +23,16 @@ namespace RPGbot.Modules.RPG
         [JsonProperty("Skills")]
         public List<string> SkillsNames { get; set; }
         [JsonProperty("Backpack")]
-        public List<string> BackpackItemNames { get; set; }
+        public List<Item> Backpack { get; set; }
+        //public List<string> BackpackItemNames { get; set; }
 
         [JsonIgnore]
         //TODO: use size
         private ulong MaxHP { get { return (ulong)Math.Ceiling(Attributes.Vitality * Race.Modifiers.HP + 10); } }
         [JsonIgnore]
         private Race Race { get; set; }
-        [JsonIgnore]
-        private List<Item> Backpack { get; set; }
+        //[JsonIgnore]
+        //private List<Item> Backpack { get; set; }
         [JsonIgnore]
         private List<Skill> Skills { get; set; }
 
@@ -60,7 +61,7 @@ namespace RPGbot.Modules.RPG
             BodyParts = new List<BodyPart>();
             foreach (var bodyPart in race.BodyParts)
                 BodyParts.Add(new BodyPart(bodyPart));
-            BackpackItemNames = new List<string>();
+            //BackpackItemNames = new List<string>();
             Backpack = new List<Item>();
             SkillsNames = new List<string>();
             Skills = new List<Skill>();

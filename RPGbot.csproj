@@ -79,6 +79,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IPlugin.cs" />
     <Compile Include="Modules\RPG\CommandsCharacter.cs" />
     <Compile Include="Modules\RPG\CommandsSkills.cs" />
     <Compile Include="Modules\RPG\Dice.cs" />

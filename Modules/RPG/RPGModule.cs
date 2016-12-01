@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace RPGbot.Modules.RPG
 {
@@ -180,12 +181,23 @@ namespace RPGbot.Modules.RPG
                                      .ToList();
 
             List<Skill> skills = new List<Skill>();
+            Dictionary<IPlugin, string> _plugins = new Dictionary<IPlugin, string>();
 
             foreach (var skillPath in skillPaths)
             {
                 try
                 {
-                    skills.Add(UtilityClass.Deserialize<Skill>(skillPath));
+                    var skill = UtilityClass.Deserialize<Skill>(skillPath);
+                    skills.Add(skill);
+                    if (skill.SkillType == "Custom")
+                    {
+                        //ICollection<Assembly> assemblies = new List<Assembly>();
+                        try
+                        {
+                            _plugins.Add(LoadPlugin(skillPath), skill.Name);
+                        }
+                        catch { }
+                    }
                 }
                 catch
                 { }
@@ -196,6 +208,16 @@ namespace RPGbot.Modules.RPG
                 foreach (var skill in skills)
                     CreateSkillCommand(command, skill);
             });
+        }
+
+        private static IPlugin LoadPlugin(string skillPath)
+        {
+            AssemblyName an = AssemblyName.GetAssemblyName(System.IO.Path.GetFileNameWithoutExtension(skillPath) + ".dll");
+            Assembly assembly = Assembly.Load(an);
+            Type pluginType = typeof(IPlugin);
+            IPlugin plugin = (IPlugin)Activator.CreateInstance(pluginType);
+
+            return plugin;
         }
 
         private void CreateSkillCommand(CommandGroupBuilder command, Skill skill)
