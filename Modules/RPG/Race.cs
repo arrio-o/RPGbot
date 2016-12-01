@@ -45,23 +45,23 @@ namespace RPGbot.Modules.RPG
         }
         public static SlotTypes GetSlotType(string strSlotType)
         {
-            switch (strSlotType)
+            switch (strSlotType.ToLowerInvariant())
             {
-                case "Head":
+                case "head":
                     return SlotTypes.Head;
-                case "Neck":
+                case "neck":
                     return SlotTypes.Neck;
-                case "UpperBody":
+                case "upperbody":
                     return SlotTypes.UpperBody;
-                case "LowerBody":
+                case "lowerbody":
                     return SlotTypes.LowerBody;
-                case "Leg":
+                case "leg":
                     return SlotTypes.Leg;
-                case "Hand":
+                case "hand":
                     return SlotTypes.Hand;
-                case "Wing":
+                case "wing":
                     return SlotTypes.Wing;
-                case "Tail":
+                case "tail":
                     return SlotTypes.Tail;
                 default:
                     return SlotTypes.undefined;

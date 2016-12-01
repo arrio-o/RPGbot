@@ -106,7 +106,9 @@ namespace RPGbot.Modules.RPG
                 await _client.Reply(e, $"Персонаж создан.");
                 try
                 {
-                    UtilityClass.Serialize<Character>(newCharacter, System.IO.Path.Combine(System.Environment.CurrentDirectory, "Data\\Characters\\" + e.User.Name + "\\" + newCharacter.Name + ".json"));
+                    var directory = System.IO.Path.Combine(System.Environment.CurrentDirectory, "Data\\Characters\\" + e.User.Name);
+                    System.IO.Directory.CreateDirectory(directory);
+                    UtilityClass.Serialize<Character>(newCharacter, System.IO.Path.Combine(directory, newCharacter.Name + ".json"));
                 }
                 catch (Exception ex)
                 {

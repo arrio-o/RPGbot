@@ -66,45 +66,33 @@ namespace RPGbot.Modules.RPG
             Skills = new List<Skill>();
         }
 
-        public bool Dodge(Character attacker, Skill skill, BodyPart.SlotTypes targetPartType, ref string report)
+        public bool Dodge(Character attacker, Skill skill, bool isTargeted, ref string report)
         {
             if (report == null) report = "";
-            var targetingPenalty = targetPartType == BodyPart.SlotTypes.undefined ? 1 : 0.8;
+            var targetingPenalty = isTargeted ? 0.8 : 1;
 
             var attackRating = new Dice(attacker.Attributes.Dexterity, attacker.Attributes.Perception, attacker.Attributes.Intelligence);
             var dodgeRating = new Dice(Attributes.Dexterity, Attributes.Perception, Attributes.Intelligence);
             var hitchance = targetingPenalty * attackRating.Roll() * skill.BaseHitChance / dodgeRating.Roll();
 
             report += Environment.NewLine;
-            report += ($"{attacker.Name} rolling {attackRating} to hit {this.Name} with {skill.Name}: {attackRating.LastRoll}");
-            report += Environment.NewLine;
+            report += ($"{attacker.Name} rolling {attackRating} to hit {this.Name} with {skill.Name}: {attackRating.LastRoll}; ");
+            //report += Environment.NewLine;
             report += ($"{this.Name} rolling {dodgeRating} to dodge {skill.Name}: {dodgeRating.LastRoll}");
             report += Environment.NewLine;
             bool hit = hitchance * 100 >= (new Dice(1, 100, 0)).Roll();
-            report += ($"Base hit chance for {skill.Name} is {skill.BaseHitChance}. {(targetingPenalty!=1?($"Targeting penalty: {targetingPenalty}. "):"")}Calculated chance to hit: {hitchance}. Result: {(hit?"HIT":"DODGE")}");
+            report += ($"Base hit chance for {skill.Name} is {skill.BaseHitChance}. {(targetingPenalty!=1?($"Targeting penalty: {targetingPenalty}. "):"")}Calculated chance to hit: {hitchance}. Result: **{(hit?"HIT":"DODGE")}**");
             
             return !hit;
         }
 
-        public void ApplyDamage(Character attacker, Skill skill, BodyPart.SlotTypes targetPartType, ref string report)
+        public void ApplyDamage(Character attacker, Skill skill, BodyPart targetPart, ref string report)
         {
             if (report == null) report = "";
-            BodyPart targetPart = null;
-            if (targetPartType != BodyPart.SlotTypes.undefined)
-            {
-                try
-                {
-                    var matchingParts = BodyParts.FindAll(s => s.SlotType == targetPartType && s.Status != "missing");//.Select((s, i) => i == 1);
-                    int partIndex = (new Random()).Next(matchingParts.Count() - 1);
-                    targetPart = matchingParts[partIndex];
-                }
-                catch { }
-            }
-            if (targetPart == null)
-                targetPart = BodyParts[(new Random()).Next(BodyParts.Count() - 1)];
+            //ChooseTargetBodyPart(targetPartType);
 
             //var armorAbsorb = targetPart.Holding.;
-            Dice dice = new Dice(skill.BaseDamage);            
+            Dice dice = new Dice(skill.BaseDamage);
             dice.Count += (byte)Math.Round(attacker.Attributes.Strengh * Scaling.GetScalingNumber(skill.Scaling.Strength));
             dice.Sides += (byte)Math.Round(attacker.Attributes.Dexterity * Scaling.GetScalingNumber(skill.Scaling.Dexterity));
             dice.Modifier += (byte)Math.Round(attacker.Attributes.Intelligence * Scaling.GetScalingNumber(skill.Scaling.Intelligence));
@@ -117,13 +105,29 @@ namespace RPGbot.Modules.RPG
             report += ($"Armor absorbtion is 0. Armor mitigation is 0. Resist to {skill.DamageType} is 0");
             report += Environment.NewLine;
             if (damage < 0) damage = 0;
-            report += ($"Applying {damage} damage.");
+            report += ($"Applying **{damage}** damage.");
             //TODO: use Traits and Armor items to reduce damage
             //var armorAbsorb = targetPart.Holding.;
             //var armorMitigation = 
 
             this.Status.Hitpoints -= damage;
 
+        }
+
+        public BodyPart ChooseTargetBodyPart(BodyPartTemplate.SlotTypes targetPartType)
+        {
+            if (targetPartType != BodyPart.SlotTypes.undefined)
+            {
+                try
+                {
+                    var matchingParts = BodyParts.FindAll(s => s.SlotType == targetPartType && s.Status != "missing");//.Select((s, i) => i == 1);                    
+                    int partIndex = (new Random()).Next(matchingParts.Count() - 1);
+                    if (partIndex>=0)
+                        return matchingParts[partIndex];
+                }
+                catch { }
+            }
+            return BodyParts?[(new Random()).Next(BodyParts.Count() - 1)];
         }
     }
     

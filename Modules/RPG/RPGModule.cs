@@ -212,7 +212,15 @@ namespace RPGbot.Modules.RPG
                     .Do(async e =>
                     {
                         //TODO: реализовать поддержку скиллов в виде плагинов
-                        await UseSkillAttack(e, skill);
+                        Character attackerCharacter = _allCharacters.Where(x => x.OwnerId == e.User.Id).FirstOrDefault();
+                        if (attackerCharacter == null)
+                            await _client.Reply(e, $"У вас нет персонажа.");
+                        else
+                        {
+                            string report;
+                            UseSkillPreciseAttack(e, attackerCharacter, skill, out report);
+                            await _client.Reply(e, report);
+                        }
                     });
                     break;
                 default:

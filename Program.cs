@@ -20,6 +20,8 @@ namespace RPGbot
         {
             GlobalConfig.Load();
 
+            Initialize();
+
             Client = new DiscordClient(new DiscordConfigBuilder()
             {
                 MessageCacheSize = 10,
@@ -99,6 +101,12 @@ namespace RPGbot
                     }
                 }
             });
+        }
+
+        private static void Initialize()
+        {
+            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(Environment.CurrentDirectory, "Data\\Races\\"));
+            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(Environment.CurrentDirectory, "Data\\Skills\\"));
         }
 
         public static int PermissionResolver(User user, Channel channel)
