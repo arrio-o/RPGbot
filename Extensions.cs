@@ -16,6 +16,7 @@ namespace RPGbot
         {
             if (text != null)
             {
+                await channel.SendIsTyping();
                 if (!channel.IsPrivate)
                     await channel.SendMessage($"{user.Name}: {text}");
                 else

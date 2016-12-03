@@ -55,7 +55,7 @@ namespace RPGbot.Modules.RPG
                     .Alias(new string[] { "список", "игроки" })
                     .Description("Gives a list of all party members.")
                     .Do(async e =>
-                    {
+                    {                        
                         string text = "NotImplemented";
                         await _client.Reply(e, text);
                     });
